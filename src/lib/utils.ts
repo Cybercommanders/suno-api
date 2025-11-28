@@ -111,8 +111,41 @@ export const waitForRequests = (page: Page, signal: AbortSignal): Promise<void> 
   }); 
 }
 
+/**
+ * Get CORS headers based on environment configuration
+ * Supports wildcard in development, restricted origins in production
+ */
+export function getCorsHeaders(origin?: string | null): Record<string, string> {
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [];
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
+  // In development, allow all origins
+  if (isDevelopment) {
+    return {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
+      'Access-Control-Allow-Credentials': 'false',
+    };
+  }
+
+  // In production, check against allowed origins
+  const isAllowed = origin && (allowedOrigins.includes(origin) || allowedOrigins.includes('*'));
+
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin : (allowedOrigins[0] || ''),
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
+    'Access-Control-Allow-Credentials': isAllowed ? 'true' : 'false',
+  };
+}
+
+/**
+ * Legacy CORS headers for backward compatibility
+ * @deprecated Use getCorsHeaders() instead
+ */
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
 }
