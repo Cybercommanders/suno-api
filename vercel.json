@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "name": "suno-api",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "SUNO_COOKIE": "@suno_cookie",
+    "TWOCAPTCHA_KEY": "@twocaptcha_key",
+    "BROWSER": "chromium",
+    "BROWSER_HEADLESS": "true",
+    "BROWSER_LOCALE": "en",
+    "BROWSER_GHOST_CURSOR": "false",
+    "BROWSER_DISABLE_GPU": "true",
+    "NODE_ENV": "production",
+    "LOG_LEVEL": "warn"
+  },
+  "regions": ["iad1"],
+  "functions": {
+    "src/app/api/**/route.ts": {
+      "maxDuration": 60,
+      "memory": 3008
+    },
+    "src/app/api/custom_generate/route.ts": {
+      "maxDuration": 300,
+      "memory": 3008
+    },
+    "src/app/api/generate/route.ts": {
+      "maxDuration": 300,
+      "memory": 3008
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Cookie"
+        }
+      ]
+    }
+  ]
+}

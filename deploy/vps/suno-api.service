@@ -1,0 +1,39 @@
+[Unit]
+Description=Suno API Service
+Documentation=https://github.com/gcui-art/suno-api
+After=network.target
+
+[Service]
+Type=simple
+User=suno
+Group=suno
+WorkingDirectory=/opt/suno-api
+EnvironmentFile=/opt/suno-api/.env
+
+# Node.js application
+ExecStart=/usr/bin/npm start
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=5min
+StartLimitBurst=5
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=suno-api
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/suno-api/logs
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
